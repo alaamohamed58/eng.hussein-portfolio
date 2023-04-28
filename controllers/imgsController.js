@@ -27,11 +27,11 @@ const multerFile = (req, file, cb) => {
 
 exports.upload = multer({
   storage: multerStorage,
-  fileFilter: multerFile,
-});
+  limits: { files: 10 },
+}).array("photo");
 
 exports.uploadImgs = catchAsync(async (req, res, next) => {
-  console.log(req.file);
+  console.log(req.files);
   console.log(req.body);
   const images = await Images.create({
     photo: req.file.filename,

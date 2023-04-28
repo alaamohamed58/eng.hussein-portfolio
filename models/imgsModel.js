@@ -5,6 +5,10 @@ const imgSchema = new mongoose.Schema({
     type: String,
     required: [true, "please select at least one image"],
   },
+  title: {
+    type: String,
+    required: [true, "image title is required "],
+  },
 });
 
 const Images = mongoose.model("Images", imgSchema);
