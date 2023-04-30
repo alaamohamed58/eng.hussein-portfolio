@@ -1,62 +1,103 @@
 const fs = require("fs");
-const aws = require("aws-sdk");
+const { v4: uuidv4 } = require("uuid");
+const cloudinary = require("cloudinary");
 const multer = require("multer");
-const multerS3 = require("multer-s3");
-const Images = require("../models/imgsModel");
-const catchAsync = require("../utils/catchAsync");
-const AppError = require("../utils/appError");
-
-const multerStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "public/img/projects");
-  },
-  filename: (req, file, cb) => {
-    // project-5454-444.jpg
-    const imgExtension = file.mimetype.split("/")[1];
-    cb(null, `project-${Date.now()}.${imgExtension}`);
-  },
+const Image = require("../models/imgsModel");
+cloudinary.config({
+  cloud_name: "dk3woypzf",
+  api_key: 963183673354336,
+  api_secret: "uplPeIDo76nfE3q2jqrlr9DBjho",
 });
 
-const multerFile = (req, file, cb) => {
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./uploads/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+// file validation
+const fileValidation = (req, file, cb) => {
   if (file.mimetype.startsWith("image")) {
     cb(null, true);
   } else {
-    cb(new AppError("not image! please select an image", 400), false);
+    cb({ message: "unsupported file" }, false);
   }
 };
 
 exports.upload = multer({
-  storage: multerStorage,
-  limits: { files: 10 },
-}).array("photo");
-
-exports.uploadImgs = catchAsync(async (req, res, next) => {
-  console.log(req.files);
-  console.log(req.body);
-  const images = await Images.create({
-    photo: req.file.filename,
-  });
-
-  res.status(201).json({
-    message: "successfully uploaded",
-    data: {
-      images,
-    },
-  });
-  4;
+  storage,
+  fileFilter: fileValidation,
 });
 
-exports.getImages = catchAsync(async (req, res, next) => {
-  const imagePath = "public/img/projects";
-  fs.readdir(imagePath, (err, files) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Error retrieving images");
-    } else {
-      const images = files.filter((file) =>
-        /\.(jpg|jpeg|png|gif)$/i.test(file)
-      );
-      res.json(images);
+exports.addImage = async (req, res, title) => {
+  try {
+    const uploader = async (path, title) =>
+      await cloudinary.uploader.upload(path, { public_id: uuidv4() });
+
+    const urls = [];
+    const { files } = req;
+
+    for (const file of files) {
+      const { path } = file;
+      const result = await uploader(path);
+      urls.push(result.secure_url);
+      // publicIds.push(result.public_id); // add public_id to the array
+      fs.unlinkSync(path);
+      const image = new Image({
+        title: req.body.title,
+        image: result.secure_url,
+        cloudinary_id: result.public_id,
+      });
+      await image.save();
     }
-  });
-});
+    console.log(urls);
+
+    res.status(200).json({
+      urls: urls,
+      message: "Images uploaded successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Error uploading images",
+    });
+  }
+};
+
+exports.getImages = async (req, res) => {
+  try {
+    const images = await Image.find().sort({ date: -1 }).limit(10);
+
+    res.status(200).json({
+      images: images,
+      message: "Images retrieved successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Error retrieving images",
+    });
+  }
+};
+exports.deleteImage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    // Find the image by ID in MongoDB
+    const image = await Image.findById(id);
+    // Delete the image from Cloudinary
+    await cloudinary.uploader.destroy(image.cloudinary_id);
+    // Delete the image from MongoDB
+    await Image.findByIdAndDelete(id);
+
+    res.status(200).json({
+      message: "Image deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Error deleting image",
+    });
+  }
+};

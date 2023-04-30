@@ -1,16 +1,17 @@
 const mongoose = require("mongoose");
 
-const imgSchema = new mongoose.Schema({
-  photo: {
-    type: String,
-    required: [true, "please select at least one image"],
-  },
+const imageSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: [true, "image title is required "],
+    required: true,
+  },
+  image: {
+    type: String,
+    required: true,
+  },
+  cloudinary_id: {
+    type: String,
   },
 });
 
-const Images = mongoose.model("Images", imgSchema);
-
-module.exports = Images;
+module.exports = mongoose.model("Image", imageSchema);
