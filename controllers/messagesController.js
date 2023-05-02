@@ -6,7 +6,7 @@ exports.createMessage = catchAsync(async (req, res, next) => {
   await message.create(req.body);
 
   res.status(201).json({
-    message: "your message has been created",
+    message: "your message has been sent successfully",
   });
 });
 
