@@ -1,7 +1,8 @@
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
-const imageRoute = require("./routes/imgsRoute");
+const imageRoute = require("./routes/categoryRoute");
+const projectRoute = require("./routes/projectRoute");
 const messageRoute = require("./routes/messageRoute");
 const userRoute = require("./routes/userRoute");
 const globalErrorHandler = require("./controllers/errorController");
@@ -16,7 +17,8 @@ app.use(express.json());
 app.use(morgan("tiny"));
 
 //mounting
-app.use("/api/v1/imgs", imageRoute);
+app.use("/api/v1/category", imageRoute);
+app.use("/api/v1/project", projectRoute);
 app.use("/api/v1/message", messageRoute);
 app.use("/api/v1/user", userRoute);
 
