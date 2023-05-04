@@ -10,6 +10,10 @@ const messageSchema = new mongoose.Schema({
     type: String,
     required: [true, "please provide your message"],
   },
+  sendAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const message = mongoose.model("Message", messageSchema);
