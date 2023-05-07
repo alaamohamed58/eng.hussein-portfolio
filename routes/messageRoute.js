@@ -4,10 +4,11 @@ const {
   getMessages,
   deleteMessage,
 } = require("../controllers/messagesController");
+const { protect } = require("../controllers/authController");
 
 const router = express.Router();
 
-router.route("/").post(createMessage).get(getMessages);
+router.route("/").post(protect, createMessage).get(protect, getMessages);
 router.route("/:id").delete(deleteMessage);
 
 module.exports = router;

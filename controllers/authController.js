@@ -51,7 +51,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
   // 1) check if email and password exist
   if (!email || !password) {
-    return next(new AppError("please provide both email and password", 400));
+    return next(new AppError("please provide both email and password!!", 400));
   }
 
   // 2) check if email && password are correct
@@ -62,7 +62,7 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   // 3) if everything is ok send back the token to the client
-  createSendToken(user, 201, res);
+  createSendToken(user, 200, res);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {

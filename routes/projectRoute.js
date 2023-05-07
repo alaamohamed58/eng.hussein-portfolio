@@ -14,3 +14,20 @@ router
   .get(protect, getProjects);
 
 module.exports = router;
+
+/*
+
+1 - create category [
+  {
+    "category" : "health care",
+    "image" : "health care",
+   
+  }
+]
+
+
+
+
+
+
+*/
