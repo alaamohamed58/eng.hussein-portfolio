@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require("uuid");
 
 const catchAsync = require("../utils/catchAsync");
 const Projects = require("../models/projectsModel");
+const AppError = require("../utils/appError");
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -14,26 +15,30 @@ cloudinary.config({
 //Create a new category
 
 exports.createProject = catchAsync(async (req, res, next) => {
-  const uploader = async (path, title) =>
-    await cloudinary.uploader.upload(path, { public_id: uuidv4() });
   const urls = [];
-  const path = req.file.path;
-  const result = await uploader(path);
+  // const path = req.file.path;
+
+  const uploader = async (file) =>
+    await cloudinary.uploader.upload(file.path, { public_id: uuidv4() });
+
+  const result = await uploader(req.file);
   urls.push(result.secure_url);
-  console.log(path);
   // publicIds.push(result.public_id); // add public_id to the array
-  fs.unlinkSync(path);
-  const project = new Projects({
+  //fs.unlinkSync(path);
+  const project = await Projects.create({
     category: req.body.category,
     title: req.body.title,
     image: result.secure_url,
     cloudinary_id: result.public_id,
   });
-  await project.save();
 
   res.status(200).json({
-    urls: urls,
     message: "Images uploaded successfully",
+
+    data: {
+      ...project.toObject(),
+      urls: urls,
+    },
   });
 });
 

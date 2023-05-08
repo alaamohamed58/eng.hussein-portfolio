@@ -8,8 +8,8 @@ const projectsSchema = new mongoose.Schema({
     trim: true,
   },
   category: {
-    type: mongoose.Schema.ObjectId,
-    ref: "Category",
+    type: String,
+    enum: ["retail", "residential", "health_care"],
     required: [true, "project category is required"],
   },
   image: {
