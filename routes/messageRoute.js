@@ -8,7 +8,7 @@ const { protect } = require("../controllers/authController");
 
 const router = express.Router();
 
-router.route("/").post(protect, createMessage).get(protect, getMessages);
+router.route("/").post(createMessage).get(protect, getMessages);
 router.route("/:id").delete(deleteMessage);
 
 module.exports = router;

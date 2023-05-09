@@ -11,7 +11,7 @@ const router = express.Router();
 router
   .route("/")
   .post(protect, upload.single("image"), createProject)
-  .get(protect, getProjects);
+  .get(getProjects);
 
 module.exports = router;
 

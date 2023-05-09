@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require("uuid");
 const catchAsync = require("../utils/catchAsync");
 const Projects = require("../models/projectsModel");
 const AppError = require("../utils/appError");
+const APIFeatures = require("../utils/apiFeatures");
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -43,7 +44,9 @@ exports.createProject = catchAsync(async (req, res, next) => {
 });
 
 exports.getProjects = catchAsync(async (req, res) => {
-  const projects = await Projects.find().sort({ date: -1 }).limit(10);
+  const features = new APIFeatures(Projects.find(), req.query).filter();
+
+  const projects = await features.query;
 
   res.status(200).json({
     projects,

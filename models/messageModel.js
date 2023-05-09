@@ -5,6 +5,7 @@ const messageSchema = new mongoose.Schema({
     type: String,
     required: [true, "please provide your name"],
   },
+
   phone: Number,
   message: {
     type: String,
