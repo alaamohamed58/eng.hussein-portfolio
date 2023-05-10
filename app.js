@@ -7,6 +7,7 @@ const projectRoute = require("./routes/projectRoute");
 const messageRoute = require("./routes/messageRoute");
 const dashboardRoute = require("./routes/dashboardRoute");
 const userRoute = require("./routes/userRoute");
+const imgsRoute = require("./routes/imgsRoute");
 const globalErrorHandler = require("./controllers/errorController");
 const AppError = require("./utils/appError");
 
@@ -31,6 +32,7 @@ app.use("/api/v1/project", projectRoute);
 app.use("/api/v1/message", messageRoute);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/dashboard", dashboardRoute);
+app.use("/api/v1/images", imgsRoute);
 
 //handling uncached routes
 app.all("*", (req, res, next) => {

@@ -22,7 +22,6 @@ const handleValidationErrorDB = (err) => {
 };
 
 const sendErrorDev = (err, res) => {
-  console.log("START");
   console.log(err.statusCode, "1");
   console.log(err.status, "2");
   console.log("END");

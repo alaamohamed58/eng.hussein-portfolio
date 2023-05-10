@@ -1,11 +1,8 @@
-const fs = require("fs");
-
 const cloudinary = require("cloudinary");
 const { v4: uuidv4 } = require("uuid");
 
 const catchAsync = require("../utils/catchAsync");
 const Projects = require("../models/projectsModel");
-const AppError = require("../utils/appError");
 const APIFeatures = require("../utils/apiFeatures");
 
 cloudinary.config({
@@ -35,7 +32,6 @@ exports.createProject = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     message: "Images uploaded successfully",
-
     data: {
       ...project.toObject(),
       urls: urls,
