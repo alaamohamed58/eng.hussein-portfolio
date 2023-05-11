@@ -10,8 +10,15 @@ cloudinary.config({
   api_key: process.env.API_KEY,
   api_secret: process.env.API_SECRET,
 });
-//Create a new category
 
+//project names
+exports.projectNames = catchAsync(async (req, res, next) => {
+  req.query.fields = "title";
+  req.query.limit = 11111111111;
+  next();
+});
+
+//Create a new category
 exports.createProject = catchAsync(async (req, res, next) => {
   const urls = [];
   // const path = req.file.path;
@@ -40,7 +47,11 @@ exports.createProject = catchAsync(async (req, res, next) => {
 });
 
 exports.getProjects = catchAsync(async (req, res) => {
-  const features = new APIFeatures(Projects.find(), req.query).filter();
+  const features = new APIFeatures(Projects.find(), req.query)
+    .filter()
+    .limitFields()
+    .paginate()
+    .sort();
 
   const projects = await features.query;
 
