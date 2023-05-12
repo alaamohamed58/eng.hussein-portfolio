@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 const catchAsync = require("../utils/catchAsync");
 const Projects = require("../models/projectsModel");
 const APIFeatures = require("../utils/apiFeatures");
+const Images = require("../models/imgsModel");
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -22,10 +23,10 @@ exports.projectNames = catchAsync(async (req, res, next) => {
 exports.createProject = catchAsync(async (req, res, next) => {
   const urls = [];
   // const path = req.file.path;
+  await Images.deleteMany({ title: null });
 
   const uploader = async (file) =>
     await cloudinary.uploader.upload(file.path, { public_id: uuidv4() });
-
   const result = await uploader(req.file);
   urls.push(result.secure_url);
   // publicIds.push(result.public_id); // add public_id to the array
@@ -37,7 +38,7 @@ exports.createProject = catchAsync(async (req, res, next) => {
     cloudinary_id: result.public_id,
   });
 
-  res.status(200).json({
+  res.status(201).json({
     message: "Images uploaded successfully",
     data: {
       ...project.toObject(),
@@ -58,5 +59,21 @@ exports.getProjects = catchAsync(async (req, res) => {
   res.status(200).json({
     projects,
     message: "Images retrieved successfully",
+  });
+});
+exports.deleteProject = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+  //delete images with the same title
+  await Images.deleteMany({ title: id });
+
+  // Find the image by ID in MongoDB
+  const project = await Projects.findById(id);
+  // Delete the image from Cloudinary
+  await cloudinary.uploader.destroy(project.cloudinary_id);
+  // Delete the image from MongoDB
+  await Projects.findByIdAndDelete(id);
+  res.status(204).json({
+    message: "Image deleted successfully",
   });
 });

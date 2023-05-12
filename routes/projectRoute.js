@@ -3,6 +3,7 @@ const {
   createProject,
   getProjects,
   projectNames,
+  deleteProject,
 } = require("../controllers/projectsController");
 const { protect } = require("../controllers/authController");
 const upload = require("../utils/multer");
@@ -15,6 +16,8 @@ router
   .route("/")
   .post(protect, upload.single("image"), createProject)
   .get(getProjects);
+
+router.route("/:id").delete(deleteProject);
 
 module.exports = router;
 
