@@ -20,6 +20,7 @@ app.use(
       "http://localhost:5173",
       "http://localhost:3000",
       "https://eng-hussein-portfolio.vercel.app",
+      "https://hussein-portfolio.web.app",
     ],
   })
 );
