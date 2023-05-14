@@ -20,8 +20,6 @@ exports.addImage = catchAsync(async (req, res) => {
   const { files } = req;
 
   for (const file of files) {
-    console.log(file, "file");
-
     const result = await uploader(file);
     urls.push(result.secure_url);
     // publicIds.push(result.public_id); // add public_id to the array

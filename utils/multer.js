@@ -20,6 +20,9 @@ const fileValidation = (req, file, cb) => {
 const upload = multer({
   storage,
   fileFilter: fileValidation,
+  limits: {
+    files: 10,
+  },
 });
 
 module.exports = upload;
