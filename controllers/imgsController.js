@@ -6,9 +6,9 @@ const APIFeatures = require("../utils/apiFeatures");
 
 //cloudinary configration
 cloudinary.config({
-  cloud_name: "dk3woypzf",
-  api_key: 963183673354336,
-  api_secret: "uplPeIDo76nfE3q2jqrlr9DBjho",
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
 });
 
 //upload image
@@ -23,7 +23,7 @@ exports.addImage = catchAsync(async (req, res) => {
     const result = await uploader(file);
     urls.push(result.secure_url);
     // publicIds.push(result.public_id); // add public_id to the array
-    const image = await Images.create({
+    await Images.create({
       title: req.body.title,
       images: result.secure_url,
       cloudinary_id: result.public_id,

@@ -16,7 +16,6 @@ exports.addImage = catchAsync(async (req, res, next) => {
   const path = req.file.path;
   const result = await uploader(path);
   urls.push(result.secure_url);
-  console.log(path);
   // publicIds.push(result.public_id); // add public_id to the array
   fs.unlinkSync(path);
   const image = new Image({

@@ -64,16 +64,23 @@ exports.getProjects = catchAsync(async (req, res) => {
 exports.deleteProject = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  //delete images with the same title
-  await Images.deleteMany({ title: id });
-
-  // Find the image by ID in MongoDB
+  // Find the project by ID in MongoDB
   const project = await Projects.findById(id);
-  // Delete the image from Cloudinary
+
+  // Find and delete the images associated with the project from MongoDB
+  const images = await Images.find({ title: id });
+  for (const image of images) {
+    await cloudinary.uploader.destroy(image.cloudinary_id);
+    await Images.findByIdAndDelete(image._id);
+  }
+
+  // Delete the project image from Cloudinary
   await cloudinary.uploader.destroy(project.cloudinary_id);
-  // Delete the image from MongoDB
+
+  // Delete the project from MongoDB
   await Projects.findByIdAndDelete(id);
+
   res.status(204).json({
-    message: "Image deleted successfully",
+    message: "Project and associated images deleted successfully",
   });
 });
